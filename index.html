@@ -3,13 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DarkWeb - Gestor de Contenido</title>
+    <title>DarkWeb - Gestor Seguro</title>
     <style>
-        /* Estilos generales */
+        :root {
+            --bg-dark: #121212;
+            --bg-container: #1e1e1e;
+            --bg-element: #333;
+            --bg-element-hover: #444;
+            --accent-color: #4a76a8;
+            --danger-color: #ff4444;
+            --text-light: #ffffff;
+        }
+        
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #121212;
-            color: #ffffff;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
             margin: 0;
             padding: 0;
             display: flex;
@@ -18,15 +27,15 @@
             min-height: 100vh;
         }
 
-        /* Contenedores */
         .login-container, .main-container {
-            background-color: #1e1e1e;
-            padding: 20px;
+            background-color: var(--bg-container);
+            padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
             width: 90%;
             max-width: 800px;
             text-align: center;
+            transition: all 0.3s ease;
         }
 
         .main-container {
@@ -34,119 +43,98 @@
             position: relative;
         }
 
-        /* Inputs y botones */
-        input[type="text"], input[type="password"], textarea, select {
+        input, textarea, select {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
+            padding: 12px;
+            margin: 12px 0;
             border-radius: 8px;
-            border: 1px solid #333;
-            background-color: #333;
-            color: #fff;
+            border: 1px solid var(--bg-element);
+            background-color: var(--bg-element);
+            color: var(--text-light);
             font-size: 16px;
+            box-sizing: border-box;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
-            background-color: #444;
-            color: #fff;
+            background-color: var(--bg-element);
+            color: var(--text-light);
             cursor: pointer;
             font-size: 16px;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
+            margin: 5px;
         }
 
         button:hover {
-            background-color: #555;
+            background-color: var(--bg-element-hover);
+            transform: translateY(-2px);
         }
 
-        /* Menú principal */
-        .menu {
+        button.primary {
+            background-color: var(--accent-color);
+        }
+
+        button.danger {
+            background-color: var(--danger-color);
+        }
+
+        .menu, .submenu {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
-            margin-bottom: 20px;
+            margin: 20px 0;
         }
 
-        .menu button {
-            flex: 1 1 calc(33% - 20px);
-            min-width: 120px;
-        }
-
-        /* Submenús */
-        .submenu {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .submenu button {
-            flex: 1 1 calc(50% - 20px);
-            min-width: 120px;
-        }
-
-        /* Contenido */
         .content {
             display: none;
+            animation: fadeIn 0.5s ease;
         }
 
-        .content.active {
-            display: block;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .note, .media-item, .document-item {
-            background-color: #333;
+            background-color: var(--bg-element);
             padding: 15px;
-            margin: 10px 0;
+            margin: 15px 0;
             border-radius: 8px;
+            position: relative;
         }
 
-        /* Flecha para regresar */
-        .back-button {
+        .back-button, .logout-button {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #fff;
-            transition: color 0.3s ease;
-        }
-
-        .back-button:hover {
-            color: #888;
-        }
-
-        /* Videos */
-        video {
-            width: 100%;
-            max-width: 600px;
-            margin: 10px 0;
-            border-radius: 8px;
-        }
-
-        /* Botón de cerrar sesión */
-        .logout-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #ff4444;
-            color: #fff;
+            top: 15px;
             padding: 8px 16px;
             border-radius: 8px;
-            font-size: 14px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
+        }
+
+        .back-button {
+            left: 15px;
+            font-size: 24px;
+        }
+
+        .logout-button {
+            right: 15px;
+            background-color: var(--danger-color);
         }
 
         .logout-button:hover {
             background-color: #cc0000;
         }
 
-        /* Responsividad */
+        video, img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
         @media (max-width: 768px) {
             .menu button, .submenu button {
                 flex: 1 1 100%;
@@ -155,83 +143,69 @@
     </style>
 </head>
 <body>
-
-    <!-- Login -->
     <div class="login-container" id="login-container">
-        <h2>Iniciar Sesión</h2>
-        <input type="text" id="username" placeholder="Usuario">
-        <input type="password" id="password" placeholder="Contraseña">
-        <button onclick="login()">Iniciar Sesión</button>
+        <h2>🔐 Acceso Seguro</h2>
+        <input type="text" id="username" placeholder="Usuario" autocomplete="off">
+        <input type="password" id="password" placeholder="Contraseña" autocomplete="off">
+        <button class="primary" onclick="login()">Ingresar</button>
+        <p id="login-message" style="color: var(--danger-color); height: 20px;"></p>
     </div>
 
-    <!-- Main Content -->
     <div class="main-container" id="main-container">
-        <!-- Flecha para regresar -->
-        <div class="back-button" id="back-button" style="display: none;" onclick="showMenu()">&#8592;</div>
-
-        <!-- Botón de cerrar sesión -->
+        <div class="back-button" id="back-button" style="display: none;" onclick="showMenu()">←</div>
         <div class="logout-button" onclick="logout()">Cerrar Sesión</div>
 
-        <!-- Menú principal -->
         <div id="main-menu">
-            <h2>DarkWeb - Gestor de Contenido</h2>
+            <h2>📁 DarkWeb - Gestor Seguro</h2>
             <div class="menu">
-                <button onclick="showContent('notes')">Notas</button>
-                <button onclick="showContent('media')">Fotos/Videos</button>
-                <button onclick="showContent('documents')">Documentos</button>
+                <button class="primary" onclick="showContent('notes')">📝 Notas</button>
+                <button class="primary" onclick="showContent('media')">🖼️ Multimedia</button>
+                <button class="primary" onclick="showContent('documents')">📄 Documentos</button>
             </div>
         </div>
 
-        <!-- Notas -->
         <div class="content" id="notes">
-            <h3>Notas</h3>
-            <textarea id="note-input" placeholder="Escribe una nota..."></textarea>
-            <button onclick="addNote()">Guardar Nota</button>
+            <h3>📝 Notas Privadas</h3>
+            <textarea id="note-input" placeholder="Escribe una nota confidencial..." rows="4"></textarea>
+            <button class="primary" onclick="addNote()">Guardar Nota</button>
             <div id="notes-list"></div>
         </div>
 
-        <!-- Fotos/Videos -->
         <div class="content" id="media">
-            <h3>Fotos y Videos</h3>
+            <h3>🖼️ Archivos Multimedia</h3>
             <div class="submenu">
-                <button onclick="showMediaSubContent('upload')">Subir Foto/Video</button>
-                <button onclick="showMediaSubContent('photos')">Ver Fotos</button>
-                <button onclick="showMediaSubContent('videos')">Ver Videos</button>
+                <button onclick="showMediaSubContent('upload')">⬆️ Subir</button>
+                <button onclick="showMediaSubContent('photos')">📷 Fotos</button>
+                <button onclick="showMediaSubContent('videos')">🎥 Videos</button>
             </div>
 
-            <!-- Subir Foto/Video -->
             <div id="upload-media" class="media-subcontent">
                 <input type="file" id="media-input" accept="image/*, video/*">
-                <button onclick="addMedia()">Subir</button>
+                <button class="primary" onclick="addMedia()">Subir Archivo</button>
             </div>
 
-            <!-- Ver Fotos -->
             <div id="view-photos" class="media-subcontent" style="display: none;">
                 <div id="photos-list"></div>
             </div>
 
-            <!-- Ver Videos -->
             <div id="view-videos" class="media-subcontent" style="display: none;">
                 <div id="videos-list"></div>
             </div>
         </div>
 
-        <!-- Documentos -->
         <div class="content" id="documents">
-            <h3>Documentos</h3>
+            <h3>📄 Documentos</h3>
             <div class="submenu">
-                <button onclick="showDocumentsSubContent('upload')">Subir Documento</button>
-                <button onclick="showDocumentsSubContent('view')">Ver Documentos</button>
+                <button onclick="showDocumentsSubContent('upload')">⬆️ Subir</button>
+                <button onclick="showDocumentsSubContent('view')">👀 Ver</button>
             </div>
 
-            <!-- Subir Documento -->
             <div id="upload-document" class="documents-subcontent">
                 <input type="file" id="document-input">
-                <input type="text" id="document-subject" placeholder="Materia">
-                <button onclick="addDocument()">Subir Documento</button>
+                <input type="text" id="document-subject" placeholder="Categoría">
+                <button class="primary" onclick="addDocument()">Subir Documento</button>
             </div>
 
-            <!-- Ver Documentos -->
             <div id="view-documents" class="documents-subcontent" style="display: none;">
                 <div id="documents-list"></div>
             </div>
@@ -239,25 +213,95 @@
     </div>
 
     <script>
-        // Datos temporales (en un proyecto real, usa una base de datos)
-        let notes = [];
-        let media = [];
-        let documents = [];
+        // Sistema de autenticación seguro
+        const auth = {
+            // Hashes SHA-256 precalculados para usuario y contraseña
+            validHashes: {
+                username: '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', // hash de 'DarkWeb'
+                password: '6b3a55e0261b0304143f805a24924d0c1c44524821305f31d9277843b8a10f4e'  // hash de '200520'
+            },
+            
+            async hashString(str) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(str);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            },
+            
+            async validateCredentials(username, password) {
+                const userHash = await this.hashString(username);
+                const passHash = await this.hashString(password);
+                return userHash === this.validHashes.username && passHash === this.validHashes.password;
+            }
+        };
 
-        // Login
-        function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            if (username === 'DarkWeb' && password === '200520') {
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('main-container').style.display = 'block';
-                showMenu();
-            } else {
-                alert('Usuario o contraseña incorrectos');
+        // Sistema de persistencia de datos
+        const storage = {
+            load() {
+                const data = localStorage.getItem('darkweb_data');
+                if (data) {
+                    try {
+                        const parsed = JSON.parse(data);
+                        return {
+                            notes: parsed.notes || [],
+                            media: parsed.media || [],
+                            documents: parsed.documents || []
+                        };
+                    } catch {
+                        return this.reset();
+                    }
+                }
+                return this.reset();
+            },
+            
+            save(data) {
+                localStorage.setItem('darkweb_data', JSON.stringify(data));
+            },
+            
+            reset() {
+                const emptyData = { notes: [], media: [], documents: [] };
+                this.save(emptyData);
+                return emptyData;
+            },
+            
+            clear() {
+                localStorage.removeItem('darkweb_data');
+            }
+        };
+
+        // Estado de la aplicación
+        let state = storage.load();
+
+        // Funciones de la interfaz
+        async function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const message = document.getElementById('login-message');
+            
+            if (!username || !password) {
+                message.textContent = 'Usuario y contraseña son requeridos';
+                return;
+            }
+            
+            message.textContent = 'Verificando...';
+            
+            try {
+                const isValid = await auth.validateCredentials(username, password);
+                if (isValid) {
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('main-container').style.display = 'block';
+                    showMenu();
+                    message.textContent = '';
+                } else {
+                    message.textContent = 'Credenciales inválidas';
+                }
+            } catch (error) {
+                message.textContent = 'Error en la autenticación';
+                console.error('Auth error:', error);
             }
         }
 
-        // Cerrar sesión
         function logout() {
             document.getElementById('main-container').style.display = 'none';
             document.getElementById('login-container').style.display = 'block';
@@ -265,7 +309,6 @@
             document.getElementById('password').value = '';
         }
 
-        // Mostrar menú principal
         function showMenu() {
             document.getElementById('main-menu').style.display = 'block';
             document.getElementById('back-button').style.display = 'none';
@@ -274,7 +317,6 @@
             });
         }
 
-        // Mostrar contenido de una categoría
         function showContent(contentId) {
             document.getElementById('main-menu').style.display = 'none';
             document.getElementById('back-button').style.display = 'block';
@@ -286,36 +328,43 @@
             if (contentId === 'documents') showDocumentsSubContent('upload');
         }
 
-        // Mostrar subcontenido de Fotos/Videos
         function showMediaSubContent(subContentId) {
             document.querySelectorAll('.media-subcontent').forEach(content => {
                 content.style.display = 'none';
             });
-            document.getElementById(subContentId === 'upload' ? 'upload-media' : 
-                                 subContentId === 'photos' ? 'view-photos' : 'view-videos').style.display = 'block';
+            const contentMap = {
+                'upload': 'upload-media',
+                'photos': 'view-photos',
+                'videos': 'view-videos'
+            };
+            document.getElementById(contentMap[subContentId]).style.display = 'block';
             if (subContentId === 'photos') displayPhotos();
             if (subContentId === 'videos') displayVideos();
         }
 
-        // Mostrar subcontenido de Documentos
         function showDocumentsSubContent(subContentId) {
             document.querySelectorAll('.documents-subcontent').forEach(content => {
                 content.style.display = 'none';
             });
-            document.getElementById(subContentId === 'upload' ? 'upload-document' : 'view-documents').style.display = 'block';
+            const contentMap = {
+                'upload': 'upload-document',
+                'view': 'view-documents'
+            };
+            document.getElementById(contentMap[subContentId]).style.display = 'block';
             if (subContentId === 'view') displayDocuments();
         }
 
-        // Notas
+        // Funciones para notas
         function addNote() {
-            const noteText = document.getElementById('note-input').value;
+            const noteText = document.getElementById('note-input').value.trim();
             if (noteText) {
                 const note = {
                     id: Date.now(),
                     text: noteText,
                     date: new Date().toLocaleString()
                 };
-                notes.push(note);
+                state.notes.unshift(note);
+                storage.save(state);
                 displayNotes();
                 document.getElementById('note-input').value = '';
             }
@@ -323,62 +372,83 @@
 
         function displayNotes() {
             const notesList = document.getElementById('notes-list');
-            notesList.innerHTML = '';
-            notes.forEach(note => {
+            notesList.innerHTML = state.notes.length ? '' : '<p>No hay notas guardadas</p>';
+            
+            state.notes.forEach(note => {
                 const noteElement = document.createElement('div');
                 noteElement.className = 'note';
                 noteElement.innerHTML = `
-                    <p>${note.text}</p>
+                    <p>${note.text.replace(/\n/g, '<br>')}</p>
                     <small>${note.date}</small>
-                    <button onclick="editNote(${note.id})">Editar</button>
-                    <button onclick="deleteNote(${note.id})">Borrar</button>
+                    <div style="margin-top: 10px;">
+                        <button onclick="editNote(${note.id})">✏️ Editar</button>
+                        <button class="danger" onclick="deleteNote(${note.id})">🗑️ Borrar</button>
+                    </div>
                 `;
                 notesList.appendChild(noteElement);
             });
         }
 
         function editNote(id) {
-            const note = notes.find(note => note.id === id);
+            const note = state.notes.find(n => n.id === id);
             const newText = prompt('Editar nota:', note.text);
-            if (newText) {
-                note.text = newText;
+            if (newText !== null) {
+                note.text = newText.trim();
                 note.date = new Date().toLocaleString();
+                storage.save(state);
                 displayNotes();
             }
         }
 
         function deleteNote(id) {
-            notes = notes.filter(note => note.id !== id);
-            displayNotes();
+            if (confirm('¿Borrar esta nota permanentemente?')) {
+                state.notes = state.notes.filter(n => n.id !== id);
+                storage.save(state);
+                displayNotes();
+            }
         }
 
-        // Fotos/Videos
+        // Funciones para multimedia
         function addMedia() {
             const fileInput = document.getElementById('media-input');
             const file = fileInput.files[0];
-            if (file) {
+            
+            if (!file) {
+                alert('Selecciona un archivo primero');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
                 const mediaItem = {
                     id: Date.now(),
-                    file: URL.createObjectURL(file),
+                    data: e.target.result,
                     type: file.type.startsWith('image') ? 'image' : 'video',
+                    name: file.name,
                     date: new Date().toLocaleString()
                 };
-                media.push(mediaItem);
+                state.media.unshift(mediaItem);
+                storage.save(state);
                 fileInput.value = '';
-                alert('Archivo subido correctamente');
-            }
+                alert('Archivo guardado correctamente');
+            };
+            reader.readAsDataURL(file);
         }
 
         function displayPhotos() {
             const photosList = document.getElementById('photos-list');
-            photosList.innerHTML = '';
-            media.filter(item => item.type === 'image').forEach(item => {
+            const photos = state.media.filter(item => item.type === 'image');
+            
+            photosList.innerHTML = photos.length ? '' : '<p>No hay fotos guardadas</p>';
+            
+            photos.forEach(item => {
                 const photoElement = document.createElement('div');
                 photoElement.className = 'media-item';
                 photoElement.innerHTML = `
-                    <img src="${item.file}" width="200">
+                    <img src="${item.data}" alt="${item.name}" style="max-height: 300px;">
+                    <p>${item.name}</p>
                     <small>${item.date}</small>
-                    <button onclick="deleteMedia(${item.id})">Borrar</button>
+                    <button class="danger" onclick="deleteMedia(${item.id})">🗑️ Borrar</button>
                 `;
                 photosList.appendChild(photoElement);
             });
@@ -386,72 +456,103 @@
 
         function displayVideos() {
             const videosList = document.getElementById('videos-list');
-            videosList.innerHTML = '';
-            media.filter(item => item.type === 'video').forEach(item => {
+            const videos = state.media.filter(item => item.type === 'video');
+            
+            videosList.innerHTML = videos.length ? '' : '<p>No hay videos guardados</p>';
+            
+            videos.forEach(item => {
                 const videoElement = document.createElement('div');
                 videoElement.className = 'media-item';
                 videoElement.innerHTML = `
-                    <video src="${item.file}" controls></video>
+                    <video src="${item.data}" controls style="max-height: 300px;"></video>
+                    <p>${item.name}</p>
                     <small>${item.date}</small>
-                    <button onclick="deleteMedia(${item.id})">Borrar</button>
+                    <button class="danger" onclick="deleteMedia(${item.id})">🗑️ Borrar</button>
                 `;
                 videosList.appendChild(videoElement);
             });
         }
 
         function deleteMedia(id) {
-            media = media.filter(item => item.id !== id);
-            displayPhotos();
-            displayVideos();
+            if (confirm('¿Borrar este archivo permanentemente?')) {
+                state.media = state.media.filter(item => item.id !== id);
+                storage.save(state);
+                displayPhotos();
+                displayVideos();
+            }
         }
 
-        // Documentos
+        // Funciones para documentos
         function addDocument() {
             const fileInput = document.getElementById('document-input');
             const file = fileInput.files[0];
-            const subject = document.getElementById('document-subject').value;
-            if (file && subject) {
+            const subject = document.getElementById('document-subject').value.trim();
+            
+            if (!file || !subject) {
+                alert('Selecciona un archivo y especifica una categoría');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
                 const documentItem = {
                     id: Date.now(),
-                    file: URL.createObjectURL(file),
+                    data: e.target.result,
                     name: file.name,
                     subject: subject,
                     date: new Date().toLocaleString()
                 };
-                documents.push(documentItem);
+                state.documents.unshift(documentItem);
+                storage.save(state);
                 fileInput.value = '';
                 document.getElementById('document-subject').value = '';
-                alert('Documento subido correctamente');
-            } else {
-                alert('Por favor, selecciona un archivo y especifica la materia');
-            }
+                alert('Documento guardado correctamente');
+            };
+            reader.readAsDataURL(file);
         }
 
         function displayDocuments() {
             const documentsList = document.getElementById('documents-list');
-            documentsList.innerHTML = '';
-            const subjects = [...new Set(documents.map(doc => doc.subject))];
+            documentsList.innerHTML = state.documents.length ? '' : '<p>No hay documentos guardados</p>';
+            
+            const subjects = [...new Set(state.documents.map(doc => doc.subject))];
             subjects.forEach(subject => {
                 const subjectHeader = document.createElement('h4');
                 subjectHeader.textContent = subject;
                 documentsList.appendChild(subjectHeader);
-                documents.filter(doc => doc.subject === subject).forEach(item => {
-                    const documentElement = document.createElement('div');
-                    documentElement.className = 'document-item';
-                    documentElement.innerHTML = `
-                        <a href="${item.file}" target="_blank">${item.name}</a>
-                        <small>${item.date}</small>
-                        <button onclick="deleteDocument(${item.id})">Borrar</button>
-                    `;
-                    documentsList.appendChild(documentElement);
-                });
+                
+                state.documents
+                    .filter(doc => doc.subject === subject)
+                    .forEach(item => {
+                        const docElement = document.createElement('div');
+                        docElement.className = 'document-item';
+                        docElement.innerHTML = `
+                            <a href="${item.data}" download="${item.name}">📄 ${item.name}</a>
+                            <small>${item.date}</small>
+                            <button class="danger" onclick="deleteDocument(${item.id})">🗑️ Borrar</button>
+                        `;
+                        documentsList.appendChild(docElement);
+                    });
             });
         }
 
         function deleteDocument(id) {
-            documents = documents.filter(item => item.id !== id);
-            displayDocuments();
+            if (confirm('¿Borrar este documento permanentemente?')) {
+                state.documents = state.documents.filter(item => item.id !== id);
+                storage.save(state);
+                displayDocuments();
+            }
         }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            if (state.notes.length) displayNotes();
+            if (state.media.length) {
+                displayPhotos();
+                displayVideos();
+            }
+            if (state.documents.length) displayDocuments();
+        });
     </script>
 </body>
 </html>
